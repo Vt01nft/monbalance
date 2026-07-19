@@ -471,19 +471,6 @@ export default function App() {
             </svg>
             Dashboard
           </div>
-          <div className={`sidebar-item ${currentView === 'swap' ? 'active' : ''}`} onClick={() => setCurrentView('swap')} style={{ cursor: 'pointer' }}>
-            <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
-              <path d="M2 8h12M8 2l4 6-4 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-            Swap
-          </div>
-          <div className={`sidebar-item ${currentView === 'history' ? 'active' : ''}`} onClick={() => setCurrentView('history')} style={{ cursor: 'pointer' }}>
-            <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
-              <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            </svg>
-            History
-          </div>
           <div className={`sidebar-item ${currentView === 'docs' ? 'active' : ''}`} onClick={() => setCurrentView('docs')} style={{ cursor: 'pointer' }}>
             <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
               <path d="M8 1a7 7 0 100 14A7 7 0 008 1z" stroke="currentColor" strokeWidth="1.5"/>
