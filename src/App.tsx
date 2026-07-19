@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { WalletConnect } from './components/WalletConnect';
 import { DonutChart } from './components/DonutChart';
@@ -38,7 +38,27 @@ const ROUTER_ABI = [
   "function rebalanceToMON(address[], uint256[], uint256[]) returns (uint256)"
 ];
 
+// Helper component for Docs sections
+function DocSection({ title, icon, children }: { title: string; icon: string; children: React.ReactNode }) {
+  return (
+    <div className="glass-card">
+      <div className="card-header">
+        <h3 className="card-title">
+          <span style={{ fontSize: '0.95rem' }}>{icon}</span>
+          {title}
+        </h3>
+      </div>
+      <div className="card-body" style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', lineHeight: 1.7 }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
+  // Navigation
+  const [currentView, setCurrentView] = useState<'dashboard' | 'swap' | 'history' | 'docs'>('dashboard');
+
   // Wallet State
   const [address, setAddress] = useState<string | null>(null);
   const [balance, setBalance] = useState<string>("0.0");
@@ -442,7 +462,7 @@ export default function App() {
         </div>
 
         <nav className="sidebar-nav">
-          <div className="sidebar-item active">
+          <div className={`sidebar-item ${currentView === 'dashboard' ? 'active' : ''}`} onClick={() => setCurrentView('dashboard')} style={{ cursor: 'pointer' }}>
             <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
               <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
               <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
@@ -451,20 +471,20 @@ export default function App() {
             </svg>
             Dashboard
           </div>
-          <div className="sidebar-item">
+          <div className={`sidebar-item ${currentView === 'swap' ? 'active' : ''}`} onClick={() => setCurrentView('swap')} style={{ cursor: 'pointer' }}>
             <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
               <path d="M2 8h12M8 2l4 6-4 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             Swap
           </div>
-          <div className="sidebar-item">
+          <div className={`sidebar-item ${currentView === 'history' ? 'active' : ''}`} onClick={() => setCurrentView('history')} style={{ cursor: 'pointer' }}>
             <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
               <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
             </svg>
             History
           </div>
-          <div className="sidebar-item">
+          <div className={`sidebar-item ${currentView === 'docs' ? 'active' : ''}`} onClick={() => setCurrentView('docs')} style={{ cursor: 'pointer' }}>
             <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
               <path d="M8 1a7 7 0 100 14A7 7 0 008 1z" stroke="currentColor" strokeWidth="1.5"/>
               <path d="M8 5v4M8 11v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
@@ -486,8 +506,8 @@ export default function App() {
         {/* Topbar */}
         <header className="topbar">
           <div className="topbar-left">
-            <h1>Portfolio Rebalancer</h1>
-            <p>Sweep multiple tokens into MON in one transaction</p>
+            <h1>{currentView === 'dashboard' ? 'Portfolio Rebalancer' : currentView === 'swap' ? 'Swap' : currentView === 'history' ? 'Transaction History' : 'Documentation'}</h1>
+            <p>{currentView === 'dashboard' ? 'Sweep multiple tokens into MON in one transaction' : currentView === 'swap' ? 'Coming soon — single asset swaps' : currentView === 'history' ? 'Your on-chain activity on Monad Testnet' : 'MonBalance — complete guide from A to Z'}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {/* Faucet link */}
@@ -511,6 +531,197 @@ export default function App() {
         </header>
 
         <div className="page-body">
+
+          {/* ── SWAP VIEW ── */}
+          {currentView === 'swap' && (
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', minHeight: '60vh', gap: '1rem', textAlign: 'center' }}>
+              <div style={{ width: 60, height: 60, background: 'var(--blue-dim)', border: '1px solid var(--blue-border)', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '0.5rem' }}>
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4l6 8-6 8" stroke="#23649A" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </div>
+              <h2 style={{ fontSize: '1.25rem', fontWeight: '700', letterSpacing: '-0.02em' }}>Single-Asset Swap</h2>
+              <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: 360, lineHeight: 1.6 }}>Direct token-to-token swaps are coming soon. For now, use the Dashboard to batch-sweep multiple tokens into MON in one transaction.</p>
+              <button className="btn btn-primary" onClick={() => setCurrentView('dashboard')} style={{ marginTop: '0.5rem' }}>Go to Dashboard</button>
+            </div>
+          )}
+
+          {/* ── HISTORY VIEW ── */}
+          {currentView === 'history' && (
+            <div className="glass-card">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/><path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/></svg>
+                  Transaction History
+                </h3>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{logs.length} record{logs.length !== 1 ? 's' : ''}</span>
+              </div>
+              {logs.length === 0 ? (
+                <div style={{ padding: '3rem', textAlign: 'center', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
+                  <div style={{ marginBottom: '0.75rem', opacity: 0.4 }}>No transactions yet</div>
+                  <button className="btn btn-primary" onClick={() => setCurrentView('dashboard')} style={{ fontSize: '0.82rem' }}>Go rebalance</button>
+                </div>
+              ) : (
+                <div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: '0 1.25rem', padding: '0.6rem 1.25rem', background: 'var(--bg)', borderBottom: '1px solid var(--border)', fontSize: '0.68rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--text-faint)' }}>
+                    <span>Time</span><span>Details</span><span style={{ textAlign: 'right' }}>Tx Hash</span><span style={{ textAlign: 'right' }}>Explorer</span>
+                  </div>
+                  {logs.map(log => (
+                    <div key={log.id} style={{ display: 'grid', gridTemplateColumns: 'auto 1fr auto auto', gap: '0 1.25rem', alignItems: 'center', padding: '0.85rem 1.25rem', borderBottom: '1px solid var(--border)', fontSize: '0.82rem', transition: 'background 0.12s' }}
+                      onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg-hover)')}
+                      onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+                    >
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)', flexShrink: 0 }}>{log.time}</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>{log.details}</span>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--text-muted)' }}>{log.txHash.substring(0, 10)}…</span>
+                      <a href={`https://testnet.monadscan.com/tx/${log.txHash}`} target="_blank" rel="noopener noreferrer"
+                        style={{ color: 'var(--blue)', fontSize: '0.72rem', textDecoration: 'none', fontFamily: 'var(--font-mono)' }}>↗ View</a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── DOCS VIEW ── */}
+          {currentView === 'docs' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: 860 }}>
+
+              {/* Hero */}
+              <div className="glass-card" style={{ background: 'linear-gradient(135deg, rgba(35,100,154,0.08) 0%, rgba(163,92,68,0.05) 100%)', borderColor: 'var(--blue-border)' }}>
+                <div className="card-body">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem' }}>
+                    <div style={{ width: 48, height: 48, background: 'var(--blue-dim)', border: '1px solid var(--blue-border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', flexShrink: 0 }}>⚖️</div>
+                    <div>
+                      <h2 style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '-0.03em', marginBottom: '0.2rem' }}>MonBalance Documentation</h2>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>One-click portfolio rebalancer on Monad Testnet — complete A to Z guide</p>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                    {[['Live App', 'https://monbalance.vercel.app'], ['GitHub', 'https://github.com/Vt01nft/monbalance'], ['MonadScan', 'https://testnet.monadscan.com'], ['Faucet', 'https://faucet.monad.xyz']].map(([label, url]) => (
+                      <a key={label} href={url} target="_blank" rel="noopener noreferrer"
+                        style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', padding: '0.3rem 0.75rem', background: 'var(--bg-elevated)', border: '1px solid var(--border-mid)', borderRadius: '5px', color: 'var(--blue)', fontSize: '0.75rem', fontWeight: '600', textDecoration: 'none' }}>
+                        {label} ↗
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* What is MonBalance */}
+              <DocSection title="What is MonBalance?" icon="📖">
+                <p>MonBalance is a <strong>DeFi portfolio rebalancer</strong> built natively on <strong>Monad Testnet</strong>. It lets you convert multiple ERC-20 tokens into MON (Monad's native gas token) in a single on-chain transaction — saving gas and reducing complexity.</p>
+                <p style={{ marginTop: '0.75rem' }}>Instead of doing 4 separate swap transactions, MonBalance batches them all through a custom <code>MultiSwapRouter</code> smart contract. You approve once per token, then trigger one transaction that sweeps everything.</p>
+              </DocSection>
+
+              {/* How it works */}
+              <DocSection title="How It Works" icon="⚙️">
+                <ol style={{ paddingLeft: '1.25rem', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                  {[
+                    ['Connect Wallet', 'Connect MetaMask configured for Monad Testnet (Chain ID 10143). Your MON balance and all ERC-20 tokens are loaded automatically.'],
+                    ['Get Testnet Tokens', 'Visit faucet.monad.xyz to get free testnet MON. Use it to interact with MockDEX to get mock tokens (mUSDC, mETH, mWBTC, mLINK).'],
+                    ['Set Sweep Percentages', 'Use the sliders on each token row to choose what percentage to convert. Click "Select All" to sweep 100% of every token.'],
+                    ['Execute the Sweep', 'Click the Sweep button. MonBalance first checks ERC-20 approvals (requesting any missing ones), then sends a single rebalanceToMON transaction.'],
+                    ['Receive MON', 'The MultiSwapRouter executes all swaps atomically through MockDEX. MON is deposited directly into your wallet. View the transaction on MonadScan.'],
+                  ].map(([step, desc], i) => (
+                    <li key={i}><strong style={{ color: 'var(--blue)' }}>{step}:</strong> <span style={{ color: 'var(--text-secondary)' }}>{desc}</span></li>
+                  ))}
+                </ol>
+              </DocSection>
+
+              {/* Smart Contracts */}
+              <DocSection title="Smart Contracts" icon="📜">
+                <p style={{ marginBottom: '0.85rem', color: 'var(--text-muted)', fontSize: '0.82rem' }}>All contracts are deployed on Monad Testnet (Chain ID 10143) and verified on MonadScan.</p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                  {[
+                    ['MultiSwapRouter', '0xf87e5B0b21717e818eE96B76e7a2C748cece848B', 'Core batch swap router. Accepts token arrays, executes swaps via MockDEX, returns MON.'],
+                    ['MockDEX', '0x7dfe2eB83616C6aC0BA0dC2605E9A3fD80955178', 'Constant-product AMM. Provides swap pricing and execution for mock tokens.'],
+                    ['mUSDC', '0x6A534AEa34D039c64d677264f7BD3Ee6F729AfE1', 'Mock USD Coin — 6 decimals, pegged to $1.00'],
+                    ['mETH', '0x3A600CCa2A3692b099fC40d75751E09c280527b4', 'Mock Ethereum — 18 decimals, tracks ETH price'],
+                    ['mWBTC', '0xB2Ed2BB7A61a0405F27893c5cE04efbac0A438A7', 'Mock Wrapped Bitcoin — 8 decimals, tracks BTC price'],
+                    ['mLINK', '0xf49B7540c51430e4ba9E97ee7B82b3626081Ceb0', 'Mock Chainlink — 18 decimals, tracks LINK price'],
+                  ].map(([name, addr, desc]) => (
+                    <div key={name} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem', flexWrap: 'wrap', gap: '0.3rem' }}>
+                        <span style={{ fontWeight: '700', fontSize: '0.875rem', color: 'var(--text-primary)' }}>{name}</span>
+                        <a href={`https://testnet.monadscan.com/address/${addr}`} target="_blank" rel="noopener noreferrer"
+                          style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--blue)', textDecoration: 'none' }}>{addr.substring(0,10)}… ↗</a>
+                      </div>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem' }}>{desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </DocSection>
+
+              {/* Network Setup */}
+              <DocSection title="Add Monad Testnet to MetaMask" icon="🦊">
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                  {[['Network Name', 'Monad Testnet'], ['RPC URL', 'https://testnet-rpc.monad.xyz'], ['Chain ID', '10143'], ['Currency Symbol', 'MON'], ['Block Explorer', 'https://testnet.monadscan.com']].map(([k, v]) => (
+                    <div key={k} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '6px', padding: '0.6rem 0.85rem' }}>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginBottom: '0.2rem', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.06em' }}>{k}</div>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--text-primary)', wordBreak: 'break-all' }}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </DocSection>
+
+              {/* Tech Stack */}
+              <DocSection title="Tech Stack" icon="🛠️">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '0.5rem' }}>
+                  {[['React + TypeScript', 'Frontend UI'], ['Vite', 'Build tooling'], ['Ethers.js v6', 'Wallet & contract interaction'], ['Solidity 0.8.20', 'Smart contracts'], ['Hardhat', 'Contract compilation & deploy'], ['MonadScan API', 'Token discovery'], ['Vercel', 'Hosting & CI/CD'], ['GitHub Actions', 'Auto-deploy on push']].map(([tech, role]) => (
+                    <div key={tech} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '6px', padding: '0.6rem 0.85rem' }}>
+                      <div style={{ fontWeight: '600', fontSize: '0.82rem', color: 'var(--text-primary)', marginBottom: '0.15rem' }}>{tech}</div>
+                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{role}</div>
+                    </div>
+                  ))}
+                </div>
+              </DocSection>
+
+              {/* FAQ */}
+              <DocSection title="FAQ" icon="❓">
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+                  {[
+                    ['Is this on mainnet?', 'No. MonBalance runs exclusively on Monad Testnet. All tokens are mock tokens with no real value. Use the faucet to get test MON.'],
+                    ['Do I need to approve each token?', 'Yes, once per token. MetaMask will prompt you to approve each ERC-20 before it can be swept. Approvals are unlimited, so you only do this once per token.'],
+                    ['What slippage protection is there?', 'Currently minAmountsOut is set to 0 (no slippage floor). This is testnet-safe since prices are simulated. Mainnet versions would include configurable slippage.'],
+                    ['Can I undo a sweep?', 'No. Blockchain transactions are irreversible. Double-check your percentages before confirming in MetaMask.'],
+                    ['Why does the donut chart show $0?', 'You need testnet tokens. Click "Get Testnet MON" to visit the faucet, then interact with MockDEX to acquire mUSDC, mETH, mWBTC, or mLINK.'],
+                    ['Can I sweep partial amounts?', 'Yes. Set sliders to any percentage from 1–100. A 50% sweep on mETH converts half your mETH balance to MON.'],
+                    ['How do I switch wallets?', 'Click your address pill in the top-right, then choose "Switch Account". This triggers MetaMask\'s account picker.'],
+                  ].map(([q, a]) => (
+                    <div key={q} style={{ borderLeft: '2px solid var(--blue-border)', paddingLeft: '1rem' }}>
+                      <div style={{ fontWeight: '600', fontSize: '0.875rem', marginBottom: '0.3rem', color: 'var(--text-primary)' }}>{q}</div>
+                      <div style={{ color: 'var(--text-muted)', fontSize: '0.82rem', lineHeight: 1.6 }}>{a}</div>
+                    </div>
+                  ))}
+                </div>
+              </DocSection>
+
+              {/* Resources */}
+              <DocSection title="Resources & Links" icon="🔗">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.65rem' }}>
+                  {[
+                    ['🌐 Live App', 'https://monbalance.vercel.app', 'The deployed MonBalance interface'],
+                    ['📦 GitHub', 'https://github.com/Vt01nft/monbalance', 'Full source code — open source'],
+                    ['🚰 Faucet', 'https://faucet.monad.xyz', 'Get free testnet MON'],
+                    ['🔍 MonadScan', 'https://testnet.monadscan.com', 'Monad Testnet block explorer'],
+                    ['🟣 Monad', 'https://monad.xyz', 'Official Monad website'],
+                    ['📖 Monad Docs', 'https://docs.monad.xyz', 'Official Monad developer docs'],
+                  ].map(([label, url, desc]) => (
+                    <a key={label} href={url} target="_blank" rel="noopener noreferrer"
+                      style={{ textDecoration: 'none', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem', display: 'block', transition: 'border-color 0.15s' }}
+                      onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--blue-border)')}
+                      onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
+                    >
+                      <div style={{ fontWeight: '600', fontSize: '0.875rem', color: 'var(--text-primary)', marginBottom: '0.2rem' }}>{label}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{desc}</div>
+                    </a>
+                  ))}
+                </div>
+              </DocSection>
+            </div>
+          )}
+
+          {/* ── DASHBOARD VIEW ── */}
+          {currentView === 'dashboard' && <>
 
           {/* KPI Stat Row */}
           <div className="stat-row">
@@ -871,6 +1082,8 @@ export default function App() {
               </div>
             </div>
           )}
+          </>
+          }
         </div>
       </div>
 

@@ -106,17 +106,17 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         {/* Divider */}
         <span style={{ color: '#2A2828', fontSize: '0.85rem', userSelect: 'none' }}>│</span>
 
-        {/* Balance */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1.15 }}>
+        {/* Balance — compact */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <span style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '0.8rem',
-            fontWeight: '700',
+            fontSize: '0.75rem',
+            fontWeight: '600',
             color: '#23649A',
           }}>
-            {parseFloat(balance).toFixed(4)}
+            {parseFloat(balance).toFixed(3)}
           </span>
-          <span style={{ fontSize: '0.62rem', color: '#6A6769', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>MON</span>
+          <span style={{ fontSize: '0.6rem', color: '#6A6769', letterSpacing: '0.04em', fontFamily: 'var(--font-mono)' }}>MON</span>
         </div>
 
         {/* Chevron */}
