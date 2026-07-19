@@ -1,0 +1,27 @@
+{
+  "name": "monbalance",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "compile": "hardhat compile"
+  },
+  "dependencies": {
+    "ethers": "^6.13.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "hardhat": "^2.22.5",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1"
+  }
+}
