@@ -22,7 +22,6 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -34,87 +33,97 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   }, []);
 
   const formatAddress = (addr: string) =>
-    `${addr.substring(0, 6)}...${addr.substring(addr.length - 4)}`;
+    `${addr.substring(0, 6)}…${addr.substring(addr.length - 4)}`;
 
   const isWrongNetwork = address && chainId !== null && chainId !== 10143 && chainId !== 5042002;
 
-  // Not connected at all
   if (!address) {
     return (
-      <button className="btn btn-primary btn-glow" onClick={onConnect}>
-        🔌 Connect Wallet
+      <button className="btn btn-primary" onClick={onConnect}>
+        Connect Wallet
       </button>
     );
   }
 
-  // Wrong network
   if (isWrongNetwork) {
     return (
       <button
         className="btn btn-primary"
         onClick={onSwitchNetwork}
-        style={{ background: 'var(--accent-orange)', boxShadow: '0 4px 15px rgba(255, 107, 0, 0.3)' }}
+        style={{ background: '#A35C44', borderColor: '#A35C44' }}
       >
-        ⚠️ Switch to Monad Testnet
+        Switch to Monad Testnet
       </button>
     );
   }
 
-  // Connected + correct network — show pill with dropdown
   return (
     <div ref={menuRef} style={{ position: 'relative' }}>
+      {/* Pill button */}
       <button
         onClick={() => setMenuOpen(prev => !prev)}
         style={{
           display: 'flex',
           alignItems: 'center',
           gap: '0.6rem',
-          padding: '0.45rem 0.9rem',
-          background: 'rgba(139, 117, 255, 0.06)',
-          border: '1px solid rgba(139, 117, 255, 0.28)',
-          borderRadius: '12px',
+          padding: '0.4rem 0.85rem',
+          background: '#181616',
+          border: `1px solid ${menuOpen ? '#4B4649' : '#2A2828'}`,
+          borderRadius: '8px',
           cursor: 'pointer',
           outline: 'none',
-          transition: 'border-color 0.2s, background 0.2s',
+          transition: 'border-color 0.18s, background 0.18s',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.borderColor = 'rgba(139, 117, 255, 0.55)';
-          e.currentTarget.style.background = 'rgba(139, 117, 255, 0.10)';
+          e.currentTarget.style.borderColor = '#4B4649';
+          e.currentTarget.style.background = '#1e1c1c';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'rgba(139, 117, 255, 0.28)';
-          e.currentTarget.style.background = 'rgba(139, 117, 255, 0.06)';
+          if (!menuOpen) {
+            e.currentTarget.style.borderColor = '#2A2828';
+            e.currentTarget.style.background = '#181616';
+          }
         }}
       >
-        {/* Green dot */}
+        {/* Status dot */}
         <div style={{
-          width: '8px', height: '8px', borderRadius: '50%',
-          background: 'var(--accent-green)',
-          boxShadow: '0 0 8px var(--accent-green)',
+          width: '7px', height: '7px', borderRadius: '50%',
+          background: '#87AE99',
           flexShrink: 0,
         }} />
 
         {/* Address */}
-        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: '700', color: 'var(--text-primary)' }}>
+        <span style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.82rem',
+          fontWeight: '600',
+          color: '#D7D8D7',
+          letterSpacing: '-0.01em',
+        }}>
           {formatAddress(address)}
         </span>
 
-        {/* Separator */}
-        <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.85rem' }}>│</span>
+        {/* Divider */}
+        <span style={{ color: '#2A2828', fontSize: '0.85rem', userSelect: 'none' }}>│</span>
 
-        {/* Balance — stacked */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1.2 }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', fontWeight: '700', color: 'var(--accent-purple)' }}>
+        {/* Balance */}
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', lineHeight: 1.15 }}>
+          <span style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '0.8rem',
+            fontWeight: '700',
+            color: '#23649A',
+          }}>
             {parseFloat(balance).toFixed(4)}
           </span>
-          <span style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '0.03em' }}>MON</span>
+          <span style={{ fontSize: '0.62rem', color: '#6A6769', letterSpacing: '0.05em', fontFamily: 'var(--font-mono)' }}>MON</span>
         </div>
 
         {/* Chevron */}
-        <svg width="10" height="10" viewBox="0 0 12 12" fill="none"
-          style={{ transition: 'transform 0.2s', transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0 }}
+        <svg width="9" height="9" viewBox="0 0 12 12" fill="none"
+          style={{ transition: 'transform 0.18s', transform: menuOpen ? 'rotate(180deg)' : 'rotate(0deg)', flexShrink: 0, marginLeft: '0.1rem' }}
         >
-          <path d="M2 4L6 8L10 4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <path d="M2 4L6 8L10 4" stroke="#6A6769" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       </button>
 
@@ -122,28 +131,26 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
       {menuOpen && (
         <div style={{
           position: 'absolute',
-          top: 'calc(100% + 10px)',
+          top: 'calc(100% + 8px)',
           right: 0,
-          minWidth: '230px',
-          background: 'rgba(8, 8, 24, 0.97)',
-          border: '1px solid rgba(139, 117, 255, 0.22)',
-          borderRadius: '16px',
-          boxShadow: '0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(139,117,255,0.06)',
-          backdropFilter: 'blur(24px)',
+          minWidth: '220px',
+          background: '#181616',
+          border: '1px solid #2A2828',
+          borderRadius: '10px',
+          boxShadow: '0 16px 48px rgba(0,0,0,0.55)',
           zIndex: 1000,
           overflow: 'hidden',
-          padding: '0.5rem 0',
         }}>
-          {/* Header */}
-          <div style={{ padding: '0.65rem 1rem 0.6rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', letterSpacing: '0.08em', textTransform: 'uppercase', marginBottom: '0.3rem' }}>
-              Connected Wallet
+          {/* Header info */}
+          <div style={{ padding: '0.75rem 1rem', borderBottom: '1px solid #2A2828' }}>
+            <div style={{ fontSize: '0.67rem', color: '#6A6769', letterSpacing: '0.07em', textTransform: 'uppercase', marginBottom: '0.35rem', fontWeight: '600' }}>
+              Connected
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.83rem', color: 'var(--accent-cyan)', marginBottom: '0.15rem' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.8rem', color: '#ADADAE', marginBottom: '0.2rem' }}>
               {formatAddress(address)}
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--accent-purple)', fontWeight: '700' }}>
-              {parseFloat(balance).toFixed(6)} MON
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', fontWeight: '700', color: '#23649A' }}>
+              {parseFloat(balance).toFixed(6)} <span style={{ color: '#6A6769', fontSize: '0.72rem' }}>MON</span>
             </div>
           </div>
 
@@ -153,40 +160,62 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => setMenuOpen(false)}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', padding: '0.7rem 1rem', color: 'var(--text-secondary)', fontSize: '0.875rem', textDecoration: 'none', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,229,255,0.06)')}
+            style={menuItemStyle}
+            onMouseEnter={e => (e.currentTarget.style.background = '#1e1c1c')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <span style={{ fontSize: '1rem' }}>↗</span>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M7 3H3a1 1 0 00-1 1v9a1 1 0 001 1h9a1 1 0 001-1V9" stroke="#ADADAE" strokeWidth="1.5" strokeLinecap="round"/>
+              <path d="M10 2h4v4M14 2L8 8" stroke="#ADADAE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
             <span>View on MonadScan</span>
           </a>
 
           {/* Switch Account */}
           <button
             onClick={() => { setMenuOpen(false); onSwitchAccount(); }}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', width: '100%', padding: '0.7rem 1rem', background: 'transparent', border: 'none', color: 'var(--text-secondary)', fontSize: '0.875rem', cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,117,255,0.07)')}
+            style={{ ...menuItemStyle as React.CSSProperties, width: '100%', border: 'none', textAlign: 'left', cursor: 'pointer' }}
+            onMouseEnter={e => (e.currentTarget.style.background = '#1e1c1c')}
             onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
           >
-            <span style={{ fontSize: '1rem' }}>🔄</span>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M1 8a7 7 0 1114 0A7 7 0 011 8z" stroke="#ADADAE" strokeWidth="1.5"/>
+              <path d="M6 6l-2 2 2 2M10 6l2 2-2 2" stroke="#ADADAE" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
             <span>Switch Account</span>
           </button>
 
           {/* Divider */}
-          <div style={{ height: '1px', background: 'rgba(255,255,255,0.05)', margin: '0.3rem 0' }} />
+          <div style={{ height: '1px', background: '#2A2828' }} />
 
           {/* Disconnect */}
           <button
             onClick={() => { setMenuOpen(false); onDisconnect(); }}
-            style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', width: '100%', padding: '0.7rem 1rem', background: 'transparent', border: 'none', color: '#FF6B6B', fontSize: '0.875rem', cursor: 'pointer', textAlign: 'left', transition: 'background 0.15s' }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,107,107,0.07)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}
+            style={{ ...menuItemStyle as React.CSSProperties, width: '100%', border: 'none', textAlign: 'left', cursor: 'pointer', color: '#A35C44' }}
+            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(163,92,68,0.08)'; }}
+            onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; }}
           >
-            <span style={{ fontSize: '1rem' }}>⏏</span>
-            <span>Disconnect Wallet</span>
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" style={{ flexShrink: 0 }}>
+              <path d="M6 2H3a1 1 0 00-1 1v10a1 1 0 001 1h3M10 11l3-3-3-3M13 8H6" stroke="#A35C44" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            <span>Disconnect</span>
           </button>
         </div>
       )}
     </div>
   );
+};
+
+const menuItemStyle: React.CSSProperties = {
+  display: 'flex',
+  alignItems: 'center',
+  gap: '0.6rem',
+  padding: '0.65rem 1rem',
+  color: '#ADADAE',
+  fontSize: '0.835rem',
+  textDecoration: 'none',
+  background: 'transparent',
+  transition: 'background 0.12s',
+  fontFamily: 'var(--font-sans)',
+  fontWeight: '500',
 };

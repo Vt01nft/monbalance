@@ -18,10 +18,10 @@ const MOCK_ADDRESSES = {
 };
 
 const TOKEN_METADATA = [
-  { symbol: 'mUSDC', name: 'Mock USD Coin', color: '#2775CA', icon: '💵', decimals: 6 },
-  { symbol: 'mETH', name: 'Mock Ethereum', color: '#627EEA', icon: '🔷', decimals: 18 },
-  { symbol: 'mWBTC', name: 'Mock Wrapped Bitcoin', color: '#F7931A', icon: '₿', decimals: 8 },
-  { symbol: 'mLINK', name: 'Mock Chainlink', color: '#375BD2', icon: '🔗', decimals: 18 }
+  { symbol: 'mUSDC', name: 'Mock USD Coin', color: '#87AE99', icon: '💵', decimals: 6 },
+  { symbol: 'mETH',  name: 'Mock Ethereum',  color: '#23649A', icon: '🔷', decimals: 18 },
+  { symbol: 'mWBTC', name: 'Mock Wrapped Bitcoin', color: '#A35C44', icon: '₿', decimals: 8 },
+  { symbol: 'mLINK', name: 'Mock Chainlink', color: '#C3CCB0', icon: '🔗', decimals: 18 }
 ];
 
 // ABI templates
@@ -453,7 +453,7 @@ export default function App() {
         <button
           className="btn btn-secondary"
           onClick={handleFaucetMint}
-          style={{ borderColor: 'var(--accent-orange)', color: 'var(--accent-orange)' }}
+          style={{ borderColor: 'var(--terra)', color: 'var(--terra)', fontSize: '0.82rem' }}
         >
           🎁 Go to Faucet
         </button>
@@ -479,38 +479,37 @@ export default function App() {
                     setPercentages(next);
                   }}
                   style={{
-                    background: 'rgba(139,117,255,0.12)',
-                    border: '1px solid rgba(139,117,255,0.35)',
-                    color: 'var(--accent-purple)',
-                    borderRadius: '8px',
+                    background: 'var(--blue-dim)',
+                    border: '1px solid var(--blue-border)',
+                    color: 'var(--blue)',
+                    borderRadius: '6px',
                     padding: '0.3rem 0.75rem',
-                    fontSize: '0.78rem',
-                    fontWeight: '700',
+                    fontSize: '0.75rem',
+                    fontWeight: '600',
                     cursor: 'pointer',
-                    letterSpacing: '0.03em',
                     transition: 'background 0.15s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(139,117,255,0.22)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(139,117,255,0.12)')}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(35,100,154,0.25)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--blue-dim)')}
                 >
-                  ⚡ Select All 100%
+                  Select All 100%
                 </button>
                 <button
                   onClick={() => setPercentages({ mUSDC: 0, mETH: 0, mWBTC: 0, mLINK: 0 })}
                   style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.1)',
+                    background: 'transparent',
+                    border: '1px solid var(--border)',
                     color: 'var(--text-muted)',
-                    borderRadius: '8px',
+                    borderRadius: '6px',
                     padding: '0.3rem 0.75rem',
-                    fontSize: '0.78rem',
+                    fontSize: '0.75rem',
                     cursor: 'pointer',
-                    transition: 'background 0.15s',
+                    transition: 'all 0.15s',
                   }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.08)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.04)')}
+                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
                 >
-                  ✕ Clear
+                  Clear
                 </button>
               </div>
             </div>
@@ -530,7 +529,7 @@ export default function App() {
               <tr className="asset-row">
                 <td>
                   <div className="asset-info">
-                    <span className="asset-icon" style={{ background: 'rgba(139, 117, 255, 0.15)', color: 'var(--accent-purple)' }}>🟣</span>
+                    <span className="asset-icon" style={{ background: 'rgba(35,100,154,0.12)', color: 'var(--blue)', fontWeight: '700', fontSize: '0.75rem' }}>MON</span>
                     <div className="asset-name-col">
                       <span className="asset-symbol">MON</span>
                       <span className="asset-fullname">Monad Native Gas Token</span>
@@ -540,7 +539,7 @@ export default function App() {
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>${prices.MON.toFixed(2)}</span>
-                    <Sparkline data={priceHistories.MON} color="#8B75FF" />
+                    <Sparkline data={priceHistories.MON} color="#23649A" />
                   </div>
                 </td>
                 <td className="asset-balance">
@@ -548,8 +547,8 @@ export default function App() {
                   <div className="asset-value">${(parseFloat(balance) * prices.MON).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                 </td>
                 <td style={{ textAlign: 'right' }}>
-                  <span className="percentage-badge" style={{ background: 'rgba(0, 229, 255, 0.1)', color: 'var(--accent-cyan)' }}>
-                    RECEIVER
+                  <span style={{ fontSize: '0.7rem', fontWeight: '600', color: 'var(--sage)', background: 'var(--sage-dim)', border: '1px solid rgba(135,174,153,0.25)', padding: '0.2rem 0.5rem', borderRadius: '5px', fontFamily: 'var(--font-mono)' }}>
+                    TARGET
                   </span>
                 </td>
               </tr>
@@ -595,12 +594,9 @@ export default function App() {
                           }}
                           className="custom-slider"
                           disabled={isZeroBal}
-                          style={{
-                            '--accent-purple': token.color,
-                            opacity: isZeroBal ? 0.3 : 1
-                          } as React.CSSProperties}
+                          style={{ opacity: isZeroBal ? 0.3 : 1 } as React.CSSProperties}
                         />
-                        <span className="percentage-badge" style={{ background: token.color + '15', color: token.color }}>
+                        <span className="percentage-badge" style={{ background: token.color + '18', color: token.color, borderColor: token.color + '40' }}>
                           {percentages[token.symbol]}%
                         </span>
                       </div>
@@ -618,27 +614,27 @@ export default function App() {
           <div className="glass-card">
             <h3 className="card-title">Portfolio Allocation</h3>
             <DonutChart items={chartItems} />
-            <div style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--glass-border)', paddingTop: '1rem' }}>
-              <span style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Total Portfolio Net Worth:</span>
-              <span style={{ fontWeight: '700', fontSize: '1.1rem', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+              <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: '500' }}>Total Value</span>
+              <span style={{ fontWeight: '700', fontSize: '1rem', fontFamily: 'var(--font-mono)', color: 'var(--off-white)' }}>
                 ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
           </div>
 
           {/* Sweep Execution Panel */}
-          <div className="glass-card" style={{ border: '1px solid rgba(139, 117, 255, 0.2)' }}>
-            <h3 className="card-title">Sweep Consolidation</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Selected assets to sweep:</span>
-                <span style={{ fontWeight: '600' }}>
-                  {TOKEN_METADATA.filter(t => percentages[t.symbol] > 0).length} Assets
+          <div className="glass-card" style={{ border: '1px solid var(--blue-border)' }}>
+            <h3 className="card-title">Sweep to MON</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Assets selected</span>
+                <span style={{ fontWeight: '600', fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
+                  {TOKEN_METADATA.filter(t => percentages[t.symbol] > 0).length} / {TOKEN_METADATA.length}
                 </span>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-                <span style={{ color: 'var(--text-secondary)' }}>Target Token:</span>
-                <span style={{ fontWeight: '600', color: 'var(--accent-purple)' }}>🟣 MON</span>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Target</span>
+                <span style={{ fontWeight: '600', color: 'var(--blue)', fontFamily: 'var(--font-mono)' }}>MON</span>
               </div>
             </div>
 
@@ -660,18 +656,18 @@ export default function App() {
           <h3 className="card-title">Activity & Transaction Logs</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '180px', overflowY: 'auto' }}>
             {logs.map((log) => (
-              <div key={log.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.5rem 0.75rem', background: 'rgba(255, 255, 255, 0.01)', border: '1px solid rgba(255, 255, 255, 0.02)', borderRadius: '8px', fontSize: '0.85rem' }}>
+              <div key={log.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '7px', fontSize: '0.82rem' }}>
                 <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)' }}>[{log.time}]</span>
-                  <span style={{ color: 'var(--text-primary)' }}>{log.details}</span>
+                  <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{log.time}</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>{log.details}</span>
                 </div>
                 <a 
                   href={`https://testnet.monadscan.com/tx/${log.txHash}`}
                   target="_blank" 
                   rel="noopener noreferrer"
-                  style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', fontSize: '0.8rem' }}
+                  style={{ color: 'var(--blue)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', textDecoration: 'none' }}
                 >
-                  tx: {log.txHash.substring(0, 10)}...
+                  {log.txHash.substring(0, 10)}… ↗
                 </a>
               </div>
             ))}
@@ -683,19 +679,19 @@ export default function App() {
       {address && (
         <section className="glass-card" style={{ marginTop: '0.5rem' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 className="card-title" style={{ margin: 0 }}>🔍 All Tokens On Monad Wallet</h3>
+            <h3 className="card-title" style={{ margin: 0 }}>Wallet Tokens</h3>
             <button
               onClick={() => address && fetchWalletTokens(address)}
               disabled={tokensFetching}
-              style={{ background: 'rgba(0,229,255,0.08)', border: '1px solid rgba(0,229,255,0.3)', color: 'var(--accent-cyan)', borderRadius: '8px', padding: '0.3rem 0.75rem', fontSize: '0.8rem', cursor: tokensFetching ? 'not-allowed' : 'pointer' }}
+              style={{ background: 'transparent', border: '1px solid var(--border-hover)', color: 'var(--text-secondary)', borderRadius: '6px', padding: '0.25rem 0.65rem', fontSize: '0.75rem', cursor: tokensFetching ? 'not-allowed' : 'pointer', fontWeight: '500' }}
             >
-              {tokensFetching ? '⏳ Scanning...' : '🔄 Refresh'}
+              {tokensFetching ? 'Scanning...' : 'Refresh'}
             </button>
           </div>
           {walletTokens.length === 0 && !tokensFetching && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>
-              No ERC-20 tokens detected yet. Try refreshing or visit the{' '}
-              <a href={`https://testnet.monadscan.com/address/${address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-cyan)' }}>MonadScan explorer</a> to view your wallet.
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', textAlign: 'center', padding: '1rem 0' }}>
+              No ERC-20 tokens detected yet. Try refreshing or visit{' '}
+              <a href={`https://testnet.monadscan.com/address/${address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--blue)', textDecoration: 'none' }}>MonadScan</a>.
             </p>
           )}
           {tokensFetching && (
@@ -711,19 +707,19 @@ export default function App() {
                   rel="noopener noreferrer"
                   style={{ textDecoration: 'none' }}
                 >
-                  <div style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: '12px', padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'border-color 0.2s', cursor: 'pointer' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'rgba(0,229,255,0.35)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.06)')}
+                  <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.65rem 0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'border-color 0.18s', cursor: 'pointer' }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--blue-border)')}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
                   >
                     <div>
-                      <div style={{ fontWeight: '700', fontSize: '0.9rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{tok.symbol}</div>
-                      <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: '0.1rem', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tok.name}</div>
+                      <div style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{tok.symbol}</div>
+                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tok.name}</div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.85rem', color: 'var(--accent-cyan)' }}>
+                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--off-white)' }}>
                         {parseFloat(tok.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })}
                       </div>
-                      <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>↗ View</div>
+                      <div style={{ fontSize: '0.68rem', color: 'var(--blue)' }}>↗ View</div>
                     </div>
                   </div>
                 </a>

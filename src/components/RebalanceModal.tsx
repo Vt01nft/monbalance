@@ -26,14 +26,13 @@ export const RebalanceModal: React.FC<RebalanceModalProps> = ({
   const [confetti, setConfetti] = useState<{ id: number; left: string; delay: string; color: string }[]>([]);
 
   useEffect(() => {
-    // Generate confetti details when rebalancing is successful
     const isCompleted = steps.every(s => s.status === 'success');
     if (isCompleted && isOpen) {
-      const colors = ['#8B75FF', '#FF6B00', '#00E5FF', '#00E676', '#FFFF00'];
-      const arr = Array.from({ length: 40 }).map((_, i) => ({
+      const colors = ['#23649A', '#87AE99', '#C3CCB0', '#A35C44', '#D7D8D7'];
+      const arr = Array.from({ length: 36 }).map((_, i) => ({
         id: i,
         left: `${Math.random() * 100}%`,
-        delay: `${Math.random() * 2}s`,
+        delay: `${Math.random() * 1.8}s`,
         color: colors[Math.floor(Math.random() * colors.length)]
       }));
       setConfetti(arr);
@@ -50,88 +49,123 @@ export const RebalanceModal: React.FC<RebalanceModalProps> = ({
   return (
     <div className="modal-overlay">
       <div className="modal-content" style={{ position: 'relative' }}>
-        {/* Render Confetti */}
+
+        {/* Confetti */}
         {isCompleted && confetti.map(c => (
-          <div 
-            key={c.id} 
-            className="confetti" 
-            style={{ 
-              left: c.left, 
+          <div
+            key={c.id}
+            className="confetti"
+            style={{
+              left: c.left,
               animationDelay: c.delay,
               backgroundColor: c.color,
-              top: '-10px'
+              top: '-8px',
             }}
           />
         ))}
 
+        {/* Header */}
         <div className="modal-header">
-          {isCompleted ? '🎉 Rebalance Complete!' : hasFailed ? '❌ Rebalance Failed' : '⚖️ Executing Rebalance'}
+          {isCompleted
+            ? 'Rebalance Complete'
+            : hasFailed
+            ? 'Transaction Failed'
+            : 'Executing Rebalance'}
         </div>
 
+        {/* Error box */}
         {error && (
           <div style={{
-            background: 'rgba(212, 96, 95, 0.1)',
-            border: '1px solid #d4605f',
-            borderRadius: '12px',
-            padding: '1rem',
-            marginBottom: '1.5rem',
-            fontSize: '0.85rem',
-            color: '#F48FB1',
+            background: 'rgba(163, 92, 68, 0.08)',
+            border: '1px solid rgba(163, 92, 68, 0.3)',
+            borderRadius: '8px',
+            padding: '0.85rem 1rem',
+            marginBottom: '1.25rem',
+            fontSize: '0.8rem',
+            color: '#A35C44',
             fontFamily: 'var(--font-mono)',
-            wordBreak: 'break-all'
+            wordBreak: 'break-all',
+            lineHeight: 1.5,
           }}>
             {error}
           </div>
         )}
 
+        {/* Steps */}
         <div className="step-list">
           {steps.map((step) => (
-            <div 
-              key={step.id} 
+            <div
+              key={step.id}
               className={`step-item ${step.status === 'active' ? 'active' : ''} ${step.status === 'success' ? 'success' : ''}`}
             >
               <div className="step-icon">
-                {step.status === 'success' ? '✓' : step.status === 'active' ? '●' : '○'}
+                {step.status === 'success'
+                  ? '✓'
+                  : step.status === 'failed'
+                  ? '✕'
+                  : step.status === 'active'
+                  ? '●'
+                  : '○'}
               </div>
-              <div className="step-text" style={{ color: step.status === 'pending' ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+              <div className="step-text">
                 {step.name}
               </div>
             </div>
           ))}
         </div>
 
+        {/* Success info */}
         {isCompleted && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', alignItems: 'center', marginBottom: '1.5rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', alignItems: 'center', marginBottom: '1.5rem' }}>
             <div className="gas-saved-badge">
-              <span>🚀 Gas Saved:</span>
+              <span>Gas saved:</span>
               <span>{gasSaved}</span>
             </div>
-            
+
             {txHash && (
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', textAlign: 'center' }}>
-                <span style={{ display: 'block', marginBottom: '0.2rem' }}>Transaction Hash:</span>
-                <a 
+              <div style={{ fontSize: '0.78rem', color: '#6A6769', textAlign: 'center' }}>
+                <span style={{ display: 'block', marginBottom: '0.25rem', fontWeight: '500' }}>Transaction</span>
+                <a
                   href={`https://testnet.monadscan.com/tx/${txHash}`}
-                  target="_blank" 
+                  target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: 'var(--accent-cyan)', fontFamily: 'var(--font-mono)', textDecoration: 'underline' }}
+                  style={{
+                    color: '#23649A',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '0.75rem',
+                    textDecoration: 'none',
+                    borderBottom: '1px solid rgba(35,100,154,0.3)',
+                    paddingBottom: '1px',
+                  }}
                 >
-                  {txHash.substring(0, 18)}...{txHash.substring(txHash.length - 12)}
+                  {txHash.substring(0, 18)}…{txHash.substring(txHash.length - 10)}
                 </a>
               </div>
             )}
           </div>
         )}
 
+        {/* Footer button / waiting message */}
         <div style={{ display: 'flex', justifyContent: 'center' }}>
           {(isCompleted || hasFailed) ? (
-            <button className="btn btn-primary" onClick={onClose} style={{ width: '100%' }}>
-              Close Window
+            <button
+              className="btn btn-primary"
+              onClick={onClose}
+              style={{ width: '100%' }}
+            >
+              Close
             </button>
           ) : (
-            <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div className="step-icon" style={{ animation: 'pulse 1s infinite', border: 'none' }}>⌛</div>
-              Confirming transaction(s) in wallet...
+            <div style={{
+              fontSize: '0.82rem',
+              color: '#6A6769',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              fontFamily: 'var(--font-mono)',
+            }}>
+              <div className="step-icon" style={{ border: 'none', animation: 'pulse 1s infinite' }}>⧗</div>
+              Waiting for wallet confirmation…
             </div>
           )}
         </div>
