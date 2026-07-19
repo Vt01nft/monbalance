@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
 import { WalletConnect } from './components/WalletConnect';
 import { DonutChart } from './components/DonutChart';
 import { Sparkline } from './components/Sparkline';
@@ -424,310 +425,454 @@ export default function App() {
 
   // Calculate total USD value
   const totalUSD = chartItems.reduce((a, b) => a + b.value, 0) + (parseFloat(balance) * prices.MON);
+  const selectedCount = TOKEN_METADATA.filter(t => percentages[t.symbol] > 0).length;
+  const sweepValue = TOKEN_METADATA.reduce((sum, t) => {
+    const bal = parseFloat(tokenBalances[t.symbol] || '0');
+    const pct = percentages[t.symbol] / 100;
+    return sum + bal * pct * prices[t.symbol];
+  }, 0);
 
   return (
     <div className="app-container">
-      {/* Header */}
-      <header className="app-header">
-        <div className="logo-section">
-          <span className="logo-icon">⚖️</span>
-          <span className="logo-text">MonBalance</span>
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-logo">
+          <div className="sidebar-logo-icon">⚖️</div>
+          <span className="sidebar-logo-text">Mon<span>Balance</span></span>
         </div>
-        <WalletConnect
-          address={address}
-          balance={balance}
-          chainId={chainId}
-          onConnect={connectWallet}
-          onSwitchNetwork={handleSwitchNetwork}
-          onDisconnect={disconnectWallet}
-          onSwitchAccount={switchAccount}
-        />
-      </header>
 
-      {/* Faucet Banner */}
-      <div className="faucet-banner">
-        <div className="faucet-text">
-          <h4>🚰 Need Testnet MON?</h4>
-          <p>Get free MON and ERC-20 tokens from the official Monad Testnet Faucet to start rebalancing.</p>
+        <nav className="sidebar-nav">
+          <div className="sidebar-item active">
+            <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <rect x="9" y="1" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <rect x="1" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <rect x="9" y="9" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+            </svg>
+            Dashboard
+          </div>
+          <div className="sidebar-item">
+            <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
+              <path d="M2 8h12M8 2l4 6-4 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            Swap
+          </div>
+          <div className="sidebar-item">
+            <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M8 5v3l2 2" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            History
+          </div>
+          <div className="sidebar-item">
+            <svg className="sidebar-item-icon" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1a7 7 0 100 14A7 7 0 008 1z" stroke="currentColor" strokeWidth="1.5"/>
+              <path d="M8 5v4M8 11v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            </svg>
+            Docs
+          </div>
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="network-badge">
+            <div className="network-dot" />
+            Monad Testnet
+          </div>
         </div>
-        <button
-          className="btn btn-secondary"
-          onClick={handleFaucetMint}
-          style={{ borderColor: 'var(--terra)', color: 'var(--terra)', fontSize: '0.82rem' }}
-        >
-          🎁 Go to Faucet
-        </button>
-      </div>
+      </aside>
 
-      {/* Main Grid */}
-      <main className="dashboard-grid">
-        {/* Left Side: Asset Table & Rebalancing Sliders */}
-        <section className="glass-card" style={{ padding: '1.5rem 0' }}>
-          <div style={{ padding: '0 1.5rem', marginBottom: '1.25rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-              <h3 className="card-title" style={{ margin: 0 }}>
-                Your Wallet Assets
-                <span className="card-subtitle">Select percentages to sweep/liquidate into MON</span>
-              </h3>
-              <div style={{ display: 'flex', gap: '0.5rem' }}>
-                <button
-                  onClick={() => {
-                    const next: Record<string, number> = {};
-                    TOKEN_METADATA.forEach(t => {
-                      next[t.symbol] = parseFloat(tokenBalances[t.symbol] || '0') > 0 ? 100 : 0;
-                    });
-                    setPercentages(next);
-                  }}
-                  style={{
-                    background: 'var(--blue-dim)',
-                    border: '1px solid var(--blue-border)',
-                    color: 'var(--blue)',
-                    borderRadius: '6px',
-                    padding: '0.3rem 0.75rem',
-                    fontSize: '0.75rem',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    transition: 'background 0.15s',
-                  }}
-                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(35,100,154,0.25)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = 'var(--blue-dim)')}
-                >
-                  Select All 100%
-                </button>
-                <button
-                  onClick={() => setPercentages({ mUSDC: 0, mETH: 0, mWBTC: 0, mLINK: 0 })}
-                  style={{
-                    background: 'transparent',
-                    border: '1px solid var(--border)',
-                    color: 'var(--text-muted)',
-                    borderRadius: '6px',
-                    padding: '0.3rem 0.75rem',
-                    fontSize: '0.75rem',
-                    cursor: 'pointer',
-                    transition: 'all 0.15s',
-                  }}
-                  onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
-                  onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
-                >
-                  Clear
-                </button>
+      {/* Main content */}
+      <div className="main-content">
+        {/* Topbar */}
+        <header className="topbar">
+          <div className="topbar-left">
+            <h1>Portfolio Rebalancer</h1>
+            <p>Sweep multiple tokens into MON in one transaction</p>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+            {/* Faucet link */}
+            <button
+              className="btn btn-secondary"
+              onClick={handleFaucetMint}
+              style={{ fontSize: '0.78rem', padding: '0.45rem 0.85rem', color: 'var(--terra)', borderColor: 'var(--terra-border)' }}
+            >
+              Get Testnet MON
+            </button>
+            <WalletConnect
+              address={address}
+              balance={balance}
+              chainId={chainId}
+              onConnect={connectWallet}
+              onSwitchNetwork={handleSwitchNetwork}
+              onDisconnect={disconnectWallet}
+              onSwitchAccount={switchAccount}
+            />
+          </div>
+        </header>
+
+        <div className="page-body">
+
+          {/* KPI Stat Row */}
+          <div className="stat-row">
+            <div className="stat-card">
+              <div className="stat-label">
+                <svg className="stat-label-icon" viewBox="0 0 14 14" fill="none">
+                  <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.4"/>
+                  <path d="M7 4v3l2 1.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+                </svg>
+                Portfolio Value
+              </div>
+              <div className="stat-value">
+                ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div className="stat-sub">
+                <span className="stat-pill green">Live</span>
+                across {TOKEN_METADATA.filter(t => parseFloat(tokenBalances[t.symbol] || '0') > 0).length + 1} assets
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-label">
+                <svg className="stat-label-icon" viewBox="0 0 14 14" fill="none">
+                  <path d="M2 10L7 4l3 4 2-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+                MON Balance
+              </div>
+              <div className="stat-value">{parseFloat(balance).toFixed(4)}</div>
+              <div className="stat-sub">
+                <span className="stat-pill blue">MON</span>
+                ${(parseFloat(balance) * prices.MON).toFixed(2)} USD
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-label">
+                <svg className="stat-label-icon" viewBox="0 0 14 14" fill="none">
+                  <rect x="2" y="6" width="10" height="6" rx="1" stroke="currentColor" strokeWidth="1.4"/>
+                  <path d="M5 6V4a2 2 0 014 0v2" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+                Sweep Value
+              </div>
+              <div className="stat-value">${sweepValue.toFixed(2)}</div>
+              <div className="stat-sub">
+                <span className="stat-pill olive">{selectedCount} selected</span>
+                to convert
+              </div>
+            </div>
+
+            <div className="stat-card">
+              <div className="stat-label">
+                <svg className="stat-label-icon" viewBox="0 0 14 14" fill="none">
+                  <path d="M7 2v10M2 7h10" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"/>
+                </svg>
+                Gas Savings
+              </div>
+              <div className="stat-value" style={{ fontSize: selectedCount > 1 ? '1rem' : '1.35rem' }}>
+                {selectedCount > 1
+                  ? `~${((selectedCount - 1) * 0.0019).toFixed(4)} MON`
+                  : '—'}
+              </div>
+              <div className="stat-sub">
+                vs {selectedCount > 1 ? selectedCount : '—'} separate txns
               </div>
             </div>
           </div>
 
-          <table className="assets-table">
-            <thead>
-              <tr>
-                <th style={{ width: '30%' }}>Asset</th>
-                <th style={{ width: '20%' }}>Price Trend</th>
-                <th style={{ width: '25%', textAlign: 'right' }}>Balance</th>
-                <th style={{ width: '25%', textAlign: 'right' }}>Sweep Target</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* Native MON Display */}
-              <tr className="asset-row">
-                <td>
-                  <div className="asset-info">
-                    <span className="asset-icon" style={{ background: 'rgba(35,100,154,0.12)', color: 'var(--blue)', fontWeight: '700', fontSize: '0.75rem' }}>MON</span>
-                    <div className="asset-name-col">
-                      <span className="asset-symbol">MON</span>
-                      <span className="asset-fullname">Monad Native Gas Token</span>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>${prices.MON.toFixed(2)}</span>
-                    <Sparkline data={priceHistories.MON} color="#23649A" />
-                  </div>
-                </td>
-                <td className="asset-balance">
-                  <div>{parseFloat(balance).toFixed(4)} MON</div>
-                  <div className="asset-value">${(parseFloat(balance) * prices.MON).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                </td>
-                <td style={{ textAlign: 'right' }}>
-                  <span style={{ fontSize: '0.7rem', fontWeight: '600', color: 'var(--sage)', background: 'var(--sage-dim)', border: '1px solid rgba(135,174,153,0.25)', padding: '0.2rem 0.5rem', borderRadius: '5px', fontFamily: 'var(--font-mono)' }}>
-                    TARGET
-                  </span>
-                </td>
-              </tr>
+          {/* Main Grid */}
+          <div className="dashboard-grid">
 
-              {/* Mock ERC-20 Tokens */}
-              {TOKEN_METADATA.map((token) => {
-                const bal = tokenBalances[token.symbol] || "0";
-                const isZeroBal = parseFloat(bal) === 0;
+            {/* LEFT: Asset Table */}
+            <div className="glass-card">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                    <path d="M1 4h14M1 8h14M1 12h14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  Wallet Assets
+                </h3>
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <button
+                    onClick={() => {
+                      const next: Record<string, number> = {};
+                      TOKEN_METADATA.forEach(t => {
+                        next[t.symbol] = parseFloat(tokenBalances[t.symbol] || '0') > 0 ? 100 : 0;
+                      });
+                      setPercentages(next);
+                    }}
+                    style={{
+                      background: 'var(--blue-dim)', border: '1px solid var(--blue-border)',
+                      color: 'var(--blue)', borderRadius: '5px', padding: '0.28rem 0.65rem',
+                      fontSize: '0.72rem', fontWeight: '600', cursor: 'pointer', transition: 'all 0.15s',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(35,100,154,0.22)')}
+                    onMouseLeave={e => (e.currentTarget.style.background = 'var(--blue-dim)')}
+                  >
+                    Select All
+                  </button>
+                  <button
+                    onClick={() => setPercentages({ mUSDC: 0, mETH: 0, mWBTC: 0, mLINK: 0 })}
+                    style={{
+                      background: 'transparent', border: '1px solid var(--border-mid)',
+                      color: 'var(--text-muted)', borderRadius: '5px', padding: '0.28rem 0.65rem',
+                      fontSize: '0.72rem', cursor: 'pointer', transition: 'all 0.15s',
+                      fontFamily: 'var(--font-sans)',
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.background = 'var(--bg-elevated)'; e.currentTarget.style.color = 'var(--text-secondary)'; }}
+                    onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = 'var(--text-muted)'; }}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
 
-                return (
-                  <tr key={token.symbol} className="asset-row">
+              <table className="assets-table">
+                <thead>
+                  <tr>
+                    <th>Asset</th>
+                    <th>Trend</th>
+                    <th style={{ textAlign: 'right' }}>Balance</th>
+                    <th>Sweep %</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Native MON */}
+                  <tr className="asset-row">
                     <td>
                       <div className="asset-info">
-                        <span className="asset-icon" style={{ background: token.color + '20', color: token.color }}>
-                          {token.icon}
-                        </span>
+                        <span className="asset-icon" style={{ background: 'rgba(35,100,154,0.1)', color: 'var(--blue)', border: '1px solid var(--blue-border)', fontSize: '0.68rem' }}>MON</span>
                         <div className="asset-name-col">
-                          <span className="asset-symbol">{token.symbol}</span>
-                          <span className="asset-fullname">{token.name}</span>
+                          <span className="asset-symbol">MON</span>
+                          <span className="asset-fullname">Monad Native</span>
                         </div>
                       </div>
                     </td>
                     <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <span style={{ fontSize: '0.85rem', fontFamily: 'var(--font-mono)' }}>${prices[token.symbol].toFixed(2)}</span>
-                        <Sparkline data={priceHistories[token.symbol]} color={token.color} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>${prices.MON.toFixed(2)}</span>
+                        <Sparkline data={priceHistories.MON} color="#23649A" />
                       </div>
                     </td>
                     <td className="asset-balance">
-                      <div>{parseFloat(bal).toLocaleString(undefined, { maximumFractionDigits: 4 })} {token.symbol}</div>
-                      <div className="asset-value">${(parseFloat(bal) * prices[token.symbol]).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      <div>{parseFloat(balance).toFixed(4)}</div>
+                      <div className="asset-value">${(parseFloat(balance) * prices.MON).toFixed(2)}</div>
                     </td>
-                    <td>
-                      <div className="slider-container" style={{ justifyContent: 'flex-end' }}>
-                        <input
-                          type="range"
-                          min="0"
-                          max="100"
-                          value={percentages[token.symbol] || 0}
-                          onChange={(e) => {
-                            const val = parseInt(e.target.value);
-                            setPercentages(prev => ({ ...prev, [token.symbol]: val }));
-                          }}
-                          className="custom-slider"
-                          disabled={isZeroBal}
-                          style={{ opacity: isZeroBal ? 0.3 : 1 } as React.CSSProperties}
-                        />
-                        <span className="percentage-badge" style={{ background: token.color + '18', color: token.color, borderColor: token.color + '40' }}>
-                          {percentages[token.symbol]}%
-                        </span>
-                      </div>
+                    <td style={{ textAlign: 'right', paddingRight: '1.25rem' }}>
+                      <span style={{ fontSize: '0.68rem', fontWeight: '600', color: 'var(--sage)', background: 'var(--sage-dim)', border: '1px solid rgba(135,174,153,0.2)', padding: '0.18rem 0.5rem', borderRadius: '4px', fontFamily: 'var(--font-mono)' }}>
+                        TARGET
+                      </span>
                     </td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </section>
 
-        {/* Right Side: Allocation Chart & Summary */}
-        <section style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-          {/* Allocation card */}
-          <div className="glass-card">
-            <h3 className="card-title">Portfolio Allocation</h3>
-            <DonutChart items={chartItems} />
-            <div style={{ marginTop: '1.25rem', display: 'flex', justifyContent: 'space-between', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
-              <span style={{ color: 'var(--text-muted)', fontSize: '0.82rem', fontWeight: '500' }}>Total Value</span>
-              <span style={{ fontWeight: '700', fontSize: '1rem', fontFamily: 'var(--font-mono)', color: 'var(--off-white)' }}>
-                ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </span>
+                  {/* ERC-20 tokens */}
+                  {TOKEN_METADATA.map((token) => {
+                    const bal = tokenBalances[token.symbol] || '0';
+                    const isZeroBal = parseFloat(bal) === 0;
+                    return (
+                      <tr key={token.symbol} className="asset-row">
+                        <td>
+                          <div className="asset-info">
+                            <span className="asset-icon" style={{ background: token.color + '15', color: token.color, border: `1px solid ${token.color}30` }}>
+                              {token.icon}
+                            </span>
+                            <div className="asset-name-col">
+                              <span className="asset-symbol">{token.symbol}</span>
+                              <span className="asset-fullname">{token.name}</span>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                            <span style={{ fontSize: '0.78rem', fontFamily: 'var(--font-mono)', color: 'var(--text-muted)' }}>${prices[token.symbol].toFixed(token.symbol === 'mWBTC' ? 0 : 2)}</span>
+                            <Sparkline data={priceHistories[token.symbol]} color={token.color} />
+                          </div>
+                        </td>
+                        <td className="asset-balance">
+                          <div style={{ color: isZeroBal ? 'var(--text-muted)' : 'var(--text-primary)' }}>
+                            {parseFloat(bal).toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                          </div>
+                          <div className="asset-value">${(parseFloat(bal) * prices[token.symbol]).toFixed(2)}</div>
+                        </td>
+                        <td>
+                          <div className="slider-container">
+                            <input
+                              type="range" min="0" max="100"
+                              value={percentages[token.symbol] || 0}
+                              onChange={e => setPercentages(prev => ({ ...prev, [token.symbol]: parseInt(e.target.value) }))}
+                              className="custom-slider"
+                              disabled={isZeroBal}
+                              style={{ opacity: isZeroBal ? 0.2 : 1 }}
+                            />
+                            <span className="percentage-badge" style={{ background: token.color + '15', color: isZeroBal ? 'var(--text-faint)' : token.color, borderColor: token.color + '35' }}>
+                              {percentages[token.symbol]}%
+                            </span>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
-          </div>
 
-          {/* Sweep Execution Panel */}
-          <div className="glass-card" style={{ border: '1px solid var(--blue-border)' }}>
-            <h3 className="card-title">Sweep to MON</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Assets selected</span>
-                <span style={{ fontWeight: '600', fontFamily: 'var(--font-mono)', color: 'var(--text-primary)' }}>
-                  {TOKEN_METADATA.filter(t => percentages[t.symbol] > 0).length} / {TOKEN_METADATA.length}
-                </span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Target</span>
-                <span style={{ fontWeight: '600', color: 'var(--blue)', fontFamily: 'var(--font-mono)' }}>MON</span>
-              </div>
-            </div>
-
-            <button 
-              className="btn btn-primary btn-glow" 
-              onClick={handleRebalance}
-              style={{ width: '100%', padding: '1rem' }}
-              disabled={TOKEN_METADATA.filter(t => percentages[t.symbol] > 0).length === 0}
-            >
-              ⚡ One-Click Sweep to MON
-            </button>
-          </div>
-        </section>
-      </main>
-
-      {/* Transaction Logs */}
-      {logs.length > 0 && (
-        <section className="glass-card" style={{ marginTop: '0.5rem' }}>
-          <h3 className="card-title">Activity & Transaction Logs</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: '180px', overflowY: 'auto' }}>
-            {logs.map((log) => (
-              <div key={log.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.55rem 0.85rem', background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '7px', fontSize: '0.82rem' }}>
-                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-                  <span style={{ color: 'var(--text-muted)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem' }}>{log.time}</span>
-                  <span style={{ color: 'var(--text-secondary)' }}>{log.details}</span>
+            {/* RIGHT: Allocation + Sweep */}
+            <div className="right-panel">
+              {/* Donut Chart */}
+              <div className="glass-card">
+                <div className="card-header">
+                  <h3 className="card-title">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                      <circle cx="8" cy="8" r="6" stroke="currentColor" strokeWidth="1.5"/>
+                      <circle cx="8" cy="8" r="2.5" stroke="currentColor" strokeWidth="1.5"/>
+                    </svg>
+                    Allocation
+                  </h3>
                 </div>
-                <a 
-                  href={`https://testnet.monadscan.com/tx/${log.txHash}`}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  style={{ color: 'var(--blue)', fontFamily: 'var(--font-mono)', fontSize: '0.75rem', textDecoration: 'none' }}
-                >
-                  {log.txHash.substring(0, 10)}… ↗
-                </a>
+                <div className="allocation-donut-wrap">
+                  <DonutChart items={chartItems} />
+                </div>
+                <div style={{ padding: '0 1.25rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)', fontWeight: '500' }}>Total Value</span>
+                  <span style={{ fontFamily: 'var(--font-mono)', fontWeight: '700', fontSize: '0.95rem', color: 'var(--off-white)' }}>
+                    ${totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </span>
+                </div>
               </div>
-            ))}
-          </div>
-        </section>
-      )}
 
-      {/* All Wallet Tokens — shown when a wallet is connected */}
-      {address && (
-        <section className="glass-card" style={{ marginTop: '0.5rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-            <h3 className="card-title" style={{ margin: 0 }}>Wallet Tokens</h3>
-            <button
-              onClick={() => address && fetchWalletTokens(address)}
-              disabled={tokensFetching}
-              style={{ background: 'transparent', border: '1px solid var(--border-hover)', color: 'var(--text-secondary)', borderRadius: '6px', padding: '0.25rem 0.65rem', fontSize: '0.75rem', cursor: tokensFetching ? 'not-allowed' : 'pointer', fontWeight: '500' }}
-            >
-              {tokensFetching ? 'Scanning...' : 'Refresh'}
-            </button>
-          </div>
-          {walletTokens.length === 0 && !tokensFetching && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', textAlign: 'center', padding: '1rem 0' }}>
-              No ERC-20 tokens detected yet. Try refreshing or visit{' '}
-              <a href={`https://testnet.monadscan.com/address/${address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--blue)', textDecoration: 'none' }}>MonadScan</a>.
-            </p>
-          )}
-          {tokensFetching && (
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>⏳ Fetching token list from MonadScan...</p>
-          )}
-          {walletTokens.length > 0 && (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.75rem' }}>
-              {walletTokens.map((tok) => (
-                <a
-                  key={tok.contractAddress}
-                  href={`https://testnet.monadscan.com/token/${tok.contractAddress}?a=${address}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: 'none' }}
-                >
-                  <div style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.65rem 0.85rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'border-color 0.18s', cursor: 'pointer' }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--blue-border)')}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}
-                  >
-                    <div>
-                      <div style={{ fontWeight: '600', fontSize: '0.85rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{tok.symbol}</div>
-                      <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)', marginTop: '0.1rem', maxWidth: '140px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tok.name}</div>
-                    </div>
-                    <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.82rem', color: 'var(--off-white)' }}>
-                        {parseFloat(tok.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })}
-                      </div>
-                      <div style={{ fontSize: '0.68rem', color: 'var(--blue)' }}>↗ View</div>
-                    </div>
+              {/* Sweep Panel */}
+              <div className="glass-card" style={{ borderColor: selectedCount > 0 ? 'var(--blue-border)' : 'var(--border)' }}>
+                <div className="card-header">
+                  <h3 className="card-title">
+                    <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                      <path d="M3 13L13 3M13 3H7M13 3v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    Sweep to MON
+                  </h3>
+                </div>
+
+                <div className="sweep-meta">
+                  <div className="sweep-row">
+                    <span className="sweep-label">Assets</span>
+                    <span className="sweep-value">{selectedCount} / {TOKEN_METADATA.length}</span>
                   </div>
-                </a>
-              ))}
+                  <div className="sweep-row">
+                    <span className="sweep-label">Est. Receive</span>
+                    <span className="sweep-value" style={{ color: 'var(--blue)' }}>
+                      ~{(sweepValue / prices.MON).toFixed(4)} MON
+                    </span>
+                  </div>
+                  <div className="sweep-row">
+                    <span className="sweep-label">Value</span>
+                    <span className="sweep-value">${sweepValue.toFixed(2)}</span>
+                  </div>
+                </div>
+
+                <div className="sweep-action">
+                  <button
+                    className="btn btn-glow"
+                    onClick={handleRebalance}
+                    style={{ width: '100%' }}
+                    disabled={selectedCount === 0 || !address}
+                  >
+                    {!address ? 'Connect Wallet First' : selectedCount === 0 ? 'Select Assets Above' : `Sweep ${selectedCount} Asset${selectedCount > 1 ? 's' : ''} → MON`}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Transaction Logs */}
+          {logs.length > 0 && (
+            <div className="glass-card">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                    <path d="M2 4h12M2 8h8M2 12h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  Activity
+                </h3>
+                <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{logs.length} transaction{logs.length > 1 ? 's' : ''}</span>
+              </div>
+              <div style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {logs.map(log => (
+                  <div key={log.id} className="log-row">
+                    <div style={{ display: 'flex', gap: '0.65rem', alignItems: 'center' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '0.7rem', color: 'var(--text-faint)', flexShrink: 0 }}>{log.time}</span>
+                      <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)' }}>{log.details}</span>
+                    </div>
+                    <a
+                      href={`https://testnet.monadscan.com/tx/${log.txHash}`}
+                      target="_blank" rel="noopener noreferrer"
+                      style={{ fontFamily: 'var(--font-mono)', fontSize: '0.72rem', color: 'var(--blue)', textDecoration: 'none', flexShrink: 0 }}
+                    >
+                      {log.txHash.substring(0, 8)}… ↗
+                    </a>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
-        </section>
-      )}
+
+          {/* Wallet Token Discovery */}
+          {address && (
+            <div className="glass-card">
+              <div className="card-header">
+                <h3 className="card-title">
+                  <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                    <circle cx="7" cy="7" r="5" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M11 11l3 3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                  </svg>
+                  All Wallet Tokens
+                </h3>
+                <button
+                  onClick={() => address && fetchWalletTokens(address)}
+                  disabled={tokensFetching}
+                  style={{
+                    background: 'transparent', border: '1px solid var(--border-mid)',
+                    color: 'var(--text-muted)', borderRadius: '5px',
+                    padding: '0.25rem 0.6rem', fontSize: '0.72rem',
+                    cursor: tokensFetching ? 'not-allowed' : 'pointer', fontWeight: '500',
+                    fontFamily: 'var(--font-sans)',
+                  }}
+                >
+                  {tokensFetching ? 'Scanning…' : 'Refresh'}
+                </button>
+              </div>
+              <div className="card-body">
+                {tokensFetching && (
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center', padding: '0.5rem 0' }}>
+                    Scanning MonadScan for tokens…
+                  </p>
+                )}
+                {!tokensFetching && walletTokens.length === 0 && (
+                  <p style={{ color: 'var(--text-muted)', fontSize: '0.8rem', textAlign: 'center', padding: '0.5rem 0' }}>
+                    No ERC-20 tokens found. Click Refresh or check{' '}
+                    <a href={`https://testnet.monadscan.com/address/${address}`} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--blue)', textDecoration: 'none' }}>MonadScan</a>.
+                  </p>
+                )}
+                {walletTokens.length > 0 && (
+                  <div className="token-grid">
+                    {walletTokens.map(tok => (
+                      <a key={tok.contractAddress} href={`https://testnet.monadscan.com/token/${tok.contractAddress}?a=${address}`} target="_blank" rel="noopener noreferrer" className="token-tile">
+                        <div>
+                          <div style={{ fontWeight: '600', fontSize: '0.82rem', color: 'var(--text-primary)', fontFamily: 'var(--font-mono)' }}>{tok.symbol}</div>
+                          <div style={{ fontSize: '0.68rem', color: 'var(--text-muted)', marginTop: '0.1rem', maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{tok.name}</div>
+                        </div>
+                        <div style={{ textAlign: 'right' }}>
+                          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '0.78rem', color: 'var(--off-white)' }}>
+                            {parseFloat(tok.balance).toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                          </div>
+                          <div style={{ fontSize: '0.65rem', color: 'var(--blue)', marginTop: '0.1rem' }}>↗</div>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Transaction Progress Modal */}
       <RebalanceModal
@@ -741,3 +886,4 @@ export default function App() {
     </div>
   );
 }
+
