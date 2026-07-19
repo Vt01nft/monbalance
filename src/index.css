@@ -1,5 +1,5 @@
 /* ============================================================
-   MONBALANCE — PROFESSIONAL DESIGN SYSTEM v2
+   MONBALANCE - PROFESSIONAL DESIGN SYSTEM v2
    Inspired by top DeFi dashboards on Dribbble
    Palette: #0B0A0A · #4B4649 · #ADADAE · #D7D8D7
             #23649A · #87AE99 · #C3CCB0 · #A35C44
@@ -91,7 +91,7 @@ body {
 }
 
 /* ============================================================
-   APP SHELL — Sidebar + Main layout
+   APP SHELL - Sidebar + Main layout
    ============================================================ */
 .app-container {
   position: relative; z-index: 1;
@@ -257,7 +257,7 @@ body {
 }
 
 /* ============================================================
-   STAT ROW — top KPI cards
+   STAT ROW - top KPI cards
    ============================================================ */
 .stat-row {
   display: grid;
@@ -351,7 +351,7 @@ body {
 }
 
 /* ============================================================
-   MAIN GRID — Table + Right panel
+   MAIN GRID - Table + Right panel
    ============================================================ */
 .dashboard-grid {
   display: grid;
@@ -643,7 +643,7 @@ body {
 .btn-glow:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
 
 /* ============================================================
-   RIGHT PANEL — Donut + Sweep
+   RIGHT PANEL - Donut + Sweep
    ============================================================ */
 .right-panel {
   display: flex;
@@ -877,7 +877,7 @@ body {
 }
 
 /* ============================================================
-   RESPONSIVE — no sidebar on tablet/mobile
+   RESPONSIVE - no sidebar on tablet/mobile
    ============================================================ */
 @media (max-width: 900px) {
   .sidebar { display: none; }

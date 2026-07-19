@@ -106,7 +106,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         {/* Divider */}
         <span style={{ color: '#2A2828', fontSize: '0.85rem', userSelect: 'none' }}>│</span>
 
-        {/* Balance — compact */}
+        {/* Balance - compact */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
           <span style={{
             fontFamily: 'var(--font-mono)',

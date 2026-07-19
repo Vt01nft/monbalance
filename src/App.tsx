@@ -182,10 +182,10 @@ export default function App() {
             params: [{ eth_accounts: {} }],
           });
         } catch {
-          // wallet_revokePermissions may not be available in older MetaMask versions — that's ok
+          // wallet_revokePermissions may not be available in older MetaMask versions - that's ok
         }
 
-        // Step 2: Request permissions again — this now reliably opens the account picker
+        // Step 2: Request permissions again - this now reliably opens the account picker
         await window.ethereum.request({
           method: 'wallet_requestPermissions',
           params: [{ eth_accounts: {} }],
@@ -291,7 +291,7 @@ export default function App() {
     }
   };
 
-  // Trigger Faucet — always redirects to official Monad Testnet Faucet
+  // Trigger Faucet - always redirects to official Monad Testnet Faucet
   const handleFaucetMint = () => {
     window.open("https://faucet.monad.xyz/", "_blank", "noopener,noreferrer");
   };
@@ -494,7 +494,7 @@ export default function App() {
         <header className="topbar">
           <div className="topbar-left">
             <h1>{currentView === 'dashboard' ? 'Portfolio Rebalancer' : currentView === 'swap' ? 'Swap' : currentView === 'history' ? 'Transaction History' : 'Documentation'}</h1>
-            <p>{currentView === 'dashboard' ? 'Sweep multiple tokens into MON in one transaction' : currentView === 'swap' ? 'Coming soon — single asset swaps' : currentView === 'history' ? 'Your on-chain activity on Monad Testnet' : 'MonBalance — complete guide from A to Z'}</p>
+            <p>{currentView === 'dashboard' ? 'Sweep multiple tokens into MON in one transaction' : currentView === 'swap' ? 'Coming soon - single asset swaps' : currentView === 'history' ? 'Your on-chain activity on Monad Testnet' : 'MonBalance - complete guide from A to Z'}</p>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
             {/* Faucet link */}
@@ -579,7 +579,7 @@ export default function App() {
                     <div style={{ width: 48, height: 48, background: 'var(--blue-dim)', border: '1px solid var(--blue-border)', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', flexShrink: 0 }}>⚖️</div>
                     <div>
                       <h2 style={{ fontSize: '1.2rem', fontWeight: '800', letterSpacing: '-0.03em', marginBottom: '0.2rem' }}>MonBalance Documentation</h2>
-                      <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>One-click portfolio rebalancer on Monad Testnet — complete A to Z guide</p>
+                      <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem' }}>One-click portfolio rebalancer on Monad Testnet - complete A to Z guide</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
@@ -595,7 +595,7 @@ export default function App() {
 
               {/* What is MonBalance */}
               <DocSection title="What is MonBalance?" icon="📖">
-                <p>MonBalance is a <strong>DeFi portfolio rebalancer</strong> built natively on <strong>Monad Testnet</strong>. It lets you convert multiple ERC-20 tokens into MON (Monad's native gas token) in a single on-chain transaction — saving gas and reducing complexity.</p>
+                <p>MonBalance is a <strong>DeFi portfolio rebalancer</strong> built natively on <strong>Monad Testnet</strong>. It lets you convert multiple ERC-20 tokens into MON (Monad's native gas token) in a single on-chain transaction - saving gas and reducing complexity.</p>
                 <p style={{ marginTop: '0.75rem' }}>Instead of doing 4 separate swap transactions, MonBalance batches them all through a custom <code>MultiSwapRouter</code> smart contract. You approve once per token, then trigger one transaction that sweeps everything.</p>
               </DocSection>
 
@@ -621,10 +621,10 @@ export default function App() {
                   {[
                     ['MultiSwapRouter', '0xf87e5B0b21717e818eE96B76e7a2C748cece848B', 'Core batch swap router. Accepts token arrays, executes swaps via MockDEX, returns MON.'],
                     ['MockDEX', '0x7dfe2eB83616C6aC0BA0dC2605E9A3fD80955178', 'Constant-product AMM. Provides swap pricing and execution for mock tokens.'],
-                    ['mUSDC', '0x6A534AEa34D039c64d677264f7BD3Ee6F729AfE1', 'Mock USD Coin — 6 decimals, pegged to $1.00'],
-                    ['mETH', '0x3A600CCa2A3692b099fC40d75751E09c280527b4', 'Mock Ethereum — 18 decimals, tracks ETH price'],
-                    ['mWBTC', '0xB2Ed2BB7A61a0405F27893c5cE04efbac0A438A7', 'Mock Wrapped Bitcoin — 8 decimals, tracks BTC price'],
-                    ['mLINK', '0xf49B7540c51430e4ba9E97ee7B82b3626081Ceb0', 'Mock Chainlink — 18 decimals, tracks LINK price'],
+                    ['mUSDC', '0x6A534AEa34D039c64d677264f7BD3Ee6F729AfE1', 'Mock USD Coin - 6 decimals, pegged to $1.00'],
+                    ['mETH', '0x3A600CCa2A3692b099fC40d75751E09c280527b4', 'Mock Ethereum - 18 decimals, tracks ETH price'],
+                    ['mWBTC', '0xB2Ed2BB7A61a0405F27893c5cE04efbac0A438A7', 'Mock Wrapped Bitcoin - 8 decimals, tracks BTC price'],
+                    ['mLINK', '0xf49B7540c51430e4ba9E97ee7B82b3626081Ceb0', 'Mock Chainlink - 18 decimals, tracks LINK price'],
                   ].map(([name, addr, desc]) => (
                     <div key={name} style={{ background: 'var(--bg-elevated)', border: '1px solid var(--border)', borderRadius: '8px', padding: '0.75rem 1rem' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.3rem', flexWrap: 'wrap', gap: '0.3rem' }}>
@@ -687,7 +687,7 @@ export default function App() {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '0.65rem' }}>
                   {[
                     ['🌐 Live App', 'https://monbalance.vercel.app', 'The deployed MonBalance interface'],
-                    ['📦 GitHub', 'https://github.com/Vt01nft/monbalance', 'Full source code — open source'],
+                    ['📦 GitHub', 'https://github.com/Vt01nft/monbalance', 'Full source code - open source'],
                     ['🚰 Faucet', 'https://faucet.monad.xyz', 'Get free testnet MON'],
                     ['🔍 MonadScan', 'https://testnet.monadscan.com', 'Monad Testnet block explorer'],
                     ['🟣 Monad', 'https://monad.xyz', 'Official Monad website'],
@@ -768,10 +768,10 @@ export default function App() {
               <div className="stat-value" style={{ fontSize: selectedCount > 1 ? '1rem' : '1.35rem' }}>
                 {selectedCount > 1
                   ? `~${((selectedCount - 1) * 0.0019).toFixed(4)} MON`
-                  : '—'}
+                  : '-'}
               </div>
               <div className="stat-sub">
-                vs {selectedCount > 1 ? selectedCount : '—'} separate txns
+                vs {selectedCount > 1 ? selectedCount : '-'} separate txns
               </div>
             </div>
           </div>

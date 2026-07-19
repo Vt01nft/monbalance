@@ -1,6 +1,6 @@
 # ⚖️ MonBalance
 
-> **One-click portfolio rebalancer on Monad Testnet** — sweep multiple ERC-20 tokens into MON in a single on-chain transaction.
+> **One-click portfolio rebalancer on Monad Testnet** - sweep multiple ERC-20 tokens into MON in a single on-chain transaction.
 
 🌐 **Live Demo:** [monbalance.vercel.app](https://monbalance.vercel.app)
 
@@ -8,17 +8,17 @@
 
 ## ✨ Features
 
-- **One-Click Batch Swap** — Select any combination of tokens and swap them all into MON in a single transaction
-- **⚡ Select All** — Set all token sliders to 100% in one click
-- **Real Wallet Integration** — Connect MetaMask, switch accounts, disconnect cleanly
-- **Balance Display** — MON balance shown right next to your address in the header
-- **All Wallet Tokens** — Automatically discovers every ERC-20 token in your wallet via MonadScan API
-- **Activity Log** — Every completed swap is logged with a clickable MonadScan transaction link
-- **Gas Savings Tracker** — Shows estimated gas saved vs doing each swap individually
-- **Live Price Sparklines** — Animated price trend charts for each asset
-- **Portfolio Donut Chart** — Real-time allocation visualization
-- **Monad Testnet Faucet** — One-click link to get free testnet MON
-- **Fully Responsive** — Works on mobile, tablet, and desktop
+- **One-Click Batch Swap** - Select any combination of tokens and swap them all into MON in a single transaction
+- **⚡ Select All** - Set all token sliders to 100% in one click
+- **Real Wallet Integration** - Connect MetaMask, switch accounts, disconnect cleanly
+- **Balance Display** - MON balance shown right next to your address in the header
+- **All Wallet Tokens** - Automatically discovers every ERC-20 token in your wallet via MonadScan API
+- **Activity Log** - Every completed swap is logged with a clickable MonadScan transaction link
+- **Gas Savings Tracker** - Shows estimated gas saved vs doing each swap individually
+- **Live Price Sparklines** - Animated price trend charts for each asset
+- **Portfolio Donut Chart** - Real-time allocation visualization
+- **Monad Testnet Faucet** - One-click link to get free testnet MON
+- **Fully Responsive** - Works on mobile, tablet, and desktop
 
 ---
 
@@ -92,8 +92,8 @@ npm run build
 
 1. **Connect** your MetaMask wallet on Monad Testnet
 2. **Get testnet tokens** from the [Monad Faucet](https://faucet.monad.xyz/)
-3. **Set percentages** — drag sliders or click ⚡ Select All 100%
-4. **Click "One-Click Sweep to MON"** — the app:
+3. **Set percentages** - drag sliders or click ⚡ Select All 100%
+4. **Click "One-Click Sweep to MON"** - the app:
    - Checks and requests ERC-20 approvals (if needed)
    - Sends a single `rebalanceToMON` transaction to the router contract
    - The router batch-swaps all selected tokens through the MockDEX
