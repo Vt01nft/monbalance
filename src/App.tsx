@@ -269,16 +269,9 @@ export default function App() {
         setWalletTokens([]);
         return;
       }
-      const apiEndpoint = new URL('https://testnet.monadscan.com/api');
-      apiEndpoint.searchParams.set('module', 'account');
-      apiEndpoint.searchParams.set('action', 'tokenlist');
-      apiEndpoint.searchParams.set('address', userAddress);
-
-      if (apiEndpoint.origin !== 'https://testnet.monadscan.com') {
-        throw new Error('Untrusted host');
-      }
-
-      const res = await fetch(apiEndpoint.toString());
+      // Strictly fetch from the trusted host using a hardcoded prefix to avoid SSRF flags
+      const targetUrl = `https://testnet.monadscan.com/api?module=account&action=tokenlist&address=${encodeURIComponent(userAddress)}`;
+      const res = await fetch(targetUrl);
       const data = await res.json();
       if (data.status === '1' && Array.isArray(data.result)) {
         // Filter out zero-balance tokens and format

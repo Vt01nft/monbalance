@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 import "./MockDEX.sol";
 
 contract MultiSwapRouter is ReentrancyGuard {
@@ -47,10 +48,9 @@ contract MultiSwapRouter is ReentrancyGuard {
             totalMONReturned += monOut;
         }
 
-        // Send accumulated MON to user
+        // Send accumulated MON to user via OpenZeppelin Address.sendValue
         if (totalMONReturned > 0) {
-            (bool success, ) = msg.sender.call{value: totalMONReturned}("");
-            require(success, "Router: MON transfer failed");
+            Address.sendValue(payable(msg.sender), totalMONReturned);
         }
 
         emit RebalanceExecuted(msg.sender, tokensIn.length);
@@ -89,11 +89,10 @@ contract MultiSwapRouter is ReentrancyGuard {
             }
         }
 
-        // Refund excess MON if any
+        // Refund excess MON if any via OpenZeppelin Address.sendValue
         uint256 excess = msg.value - totalMONRequired;
         if (excess > 0) {
-            (bool success, ) = msg.sender.call{value: excess}("");
-            require(success, "Router: Refund failed");
+            Address.sendValue(payable(msg.sender), excess);
         }
 
         emit RebalanceExecuted(msg.sender, tokensOut.length);

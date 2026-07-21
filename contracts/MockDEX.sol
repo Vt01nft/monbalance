@@ -4,6 +4,7 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 contract MockDEX is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -67,9 +68,8 @@ contract MockDEX is ReentrancyGuard {
         tokenReserves[token] = rToken + tokenAmount;
         monReserves[token] = rMON - monOut;
 
-        // Send MON to user
-        (bool success, ) = msg.sender.call{value: monOut}("");
-        require(success, "DEX: MON transfer failed");
+        // Send MON to user via OpenZeppelin Address.sendValue
+        Address.sendValue(payable(msg.sender), monOut);
 
         emit Swapped(msg.sender, token, address(0), tokenAmount, monOut);
         return monOut;
