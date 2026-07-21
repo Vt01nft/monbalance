@@ -269,9 +269,7 @@ export default function App() {
         setWalletTokens([]);
         return;
       }
-      // Strictly fetch from the trusted host using a hardcoded prefix to avoid SSRF flags
-      const targetUrl = `https://testnet.monadscan.com/api?module=account&action=tokenlist&address=${encodeURIComponent(userAddress)}`;
-      const res = await fetch(targetUrl);
+      const res = await fetch(`https://testnet.monadscan.com/api?module=account&action=tokenlist&address=${encodeURIComponent(userAddress)}`);
       const data = await res.json();
       if (data.status === '1' && Array.isArray(data.result)) {
         // Filter out zero-balance tokens and format
