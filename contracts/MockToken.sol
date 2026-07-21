@@ -52,8 +52,8 @@ contract MockToken is IERC20 {
     }
 
     function transfer(address to, uint256 value) external override returns (bool) {
-        address owner = msg.sender;
-        _transfer(owner, to, value);
+        address tokenHolder = msg.sender;
+        _transfer(tokenHolder, to, value);
         return true;
     }
 
@@ -62,8 +62,8 @@ contract MockToken is IERC20 {
     }
 
     function approve(address spender, uint256 value) external override returns (bool) {
-        address owner = msg.sender;
-        _approve(owner, spender, value);
+        address tokenHolder = msg.sender;
+        _approve(tokenHolder, spender, value);
         return true;
     }
 

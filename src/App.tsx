@@ -264,9 +264,21 @@ export default function App() {
   const fetchWalletTokens = async (userAddress: string) => {
     setTokensFetching(true);
     try {
-      // MonadScan Etherscan-compatible API: get token list
-      const url = `https://testnet.monadscan.com/api?module=account&action=tokenlist&address=${userAddress}`;
-      const res = await fetch(url);
+      // Validate address parameter and target endpoint
+      if (!userAddress || !/^0x[a-fA-F0-9]{40}$/.test(userAddress)) {
+        setWalletTokens([]);
+        return;
+      }
+      const apiEndpoint = new URL('https://testnet.monadscan.com/api');
+      apiEndpoint.searchParams.set('module', 'account');
+      apiEndpoint.searchParams.set('action', 'tokenlist');
+      apiEndpoint.searchParams.set('address', userAddress);
+
+      if (apiEndpoint.origin !== 'https://testnet.monadscan.com') {
+        throw new Error('Untrusted host');
+      }
+
+      const res = await fetch(apiEndpoint.toString());
       const data = await res.json();
       if (data.status === '1' && Array.isArray(data.result)) {
         // Filter out zero-balance tokens and format

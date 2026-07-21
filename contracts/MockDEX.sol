@@ -1,9 +1,13 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./MockToken.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-contract MockDEX {
+contract MockDEX is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
     // Reserves for each token: tokenAddress => reserveAmount
     mapping(address => uint256) public tokenReserves;
     mapping(address => uint256) public monReserves;
@@ -14,15 +18,12 @@ contract MockDEX {
     receive() external payable {}
 
     // Add liquidity for a specific token
-    function addLiquidity(address token, uint256 tokenAmount) external payable {
+    function addLiquidity(address token, uint256 tokenAmount) external payable nonReentrant {
         require(msg.value > 0, "DEX: Must send MON");
         require(tokenAmount > 0, "DEX: Must send Token");
 
         // Transfer token from user (requires approval)
-        require(
-            IERC20(token).transferFrom(msg.sender, address(this), tokenAmount),
-            "DEX: Token transfer failed"
-        );
+        IERC20(token).safeTransferFrom(msg.sender, address(this), tokenAmount);
 
         tokenReserves[token] += tokenAmount;
         monReserves[token] += msg.value;
@@ -51,7 +52,7 @@ contract MockDEX {
         address token,
         uint256 tokenAmount,
         uint256 minMONOut
-    ) external returns (uint256) {
+    ) external nonReentrant returns (uint256) {
         uint256 rToken = tokenReserves[token];
         uint256 rMON = monReserves[token];
         
@@ -60,12 +61,9 @@ contract MockDEX {
         require(address(this).balance >= monOut, "DEX: Insufficient contract MON balance");
 
         // Pull tokens from user
-        require(
-            IERC20(token).transferFrom(msg.sender, address(this), tokenAmount),
-            "DEX: Token transfer failed"
-        );
+        IERC20(token).safeTransferFrom(msg.sender, address(this), tokenAmount);
 
-        // Update reserves
+        // Update reserves BEFORE external call (Checks-Effects-Interactions)
         tokenReserves[token] = rToken + tokenAmount;
         monReserves[token] = rMON - monOut;
 
@@ -81,7 +79,7 @@ contract MockDEX {
     function swapMONForToken(
         address token,
         uint256 minTokenOut
-    ) external payable returns (uint256) {
+    ) external payable nonReentrant returns (uint256) {
         uint256 monIn = msg.value;
         require(monIn > 0, "DEX: Must send MON to swap");
 
@@ -92,15 +90,12 @@ contract MockDEX {
         require(tokenOut >= minTokenOut, "DEX: Slippage limit exceeded");
         require(IERC20(token).balanceOf(address(this)) >= tokenOut, "DEX: Insufficient token reserves");
 
-        // Update reserves
+        // Update reserves BEFORE transfer
         monReserves[token] = rMON + monIn;
         tokenReserves[token] = rToken - tokenOut;
 
-        // Send token to user
-        require(
-            IERC20(token).transfer(msg.sender, tokenOut),
-            "DEX: Token transfer failed"
-        );
+        // Send token to user safely
+        IERC20(token).safeTransfer(msg.sender, tokenOut);
 
         emit Swapped(msg.sender, address(0), token, monIn, tokenOut);
         return tokenOut;

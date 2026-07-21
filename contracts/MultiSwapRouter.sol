@@ -1,15 +1,20 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "./MockToken.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "./MockDEX.sol";
 
-contract MultiSwapRouter {
-    address public dexAddress;
+contract MultiSwapRouter is ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
+    address public immutable dexAddress;
 
     event RebalanceExecuted(address indexed user, uint256 totalSwaps);
 
     constructor(address _dexAddress) {
+        require(_dexAddress != address(0), "Router: Zero DEX address");
         dexAddress = _dexAddress;
     }
 
@@ -20,7 +25,7 @@ contract MultiSwapRouter {
         address[] calldata tokensIn,
         uint256[] calldata amountsIn,
         uint256[] calldata minMONOut
-    ) external returns (uint256 totalMONReturned) {
+    ) external nonReentrant returns (uint256 totalMONReturned) {
         require(tokensIn.length == amountsIn.length && tokensIn.length == minMONOut.length, "Router: Array length mismatch");
 
         MockDEX dex = MockDEX(payable(dexAddress));
@@ -32,16 +37,10 @@ contract MultiSwapRouter {
             if (amount == 0) continue;
 
             // Pull tokens from user (requires user to have approved this router contract)
-            require(
-                IERC20(token).transferFrom(msg.sender, address(this), amount),
-                "Router: TransferFrom failed"
-            );
+            IERC20(token).safeTransferFrom(msg.sender, address(this), amount);
 
-            // Approve MockDEX to spend tokens
-            require(
-                IERC20(token).approve(dexAddress, amount),
-                "Router: Approve failed"
-            );
+            // Approve MockDEX to spend tokens safely
+            IERC20(token).forceApprove(dexAddress, amount);
 
             // Swap tokens for MON
             uint256 monOut = dex.swapTokenForMON(token, amount, minMONOut[i]);
@@ -63,7 +62,7 @@ contract MultiSwapRouter {
         address[] calldata tokensOut,
         uint256[] calldata monAmountsIn,
         uint256[] calldata minTokensOut
-    ) external payable {
+    ) external payable nonReentrant {
         require(tokensOut.length == monAmountsIn.length && tokensOut.length == minTokensOut.length, "Router: Array length mismatch");
 
         uint256 totalMONRequired = 0;
@@ -83,13 +82,10 @@ contract MultiSwapRouter {
             // Swap MON for token
             dex.swapMONForToken{value: monAmount}(token, minTokensOut[i]);
 
-            // Transfer bought tokens back to the user
+            // Transfer bought tokens back to the user safely
             uint256 tokenBalance = IERC20(token).balanceOf(address(this));
             if (tokenBalance > 0) {
-                require(
-                    IERC20(token).transfer(msg.sender, tokenBalance),
-                    "Router: Token transfer failed"
-                );
+                IERC20(token).safeTransfer(msg.sender, tokenBalance);
             }
         }
 
